@@ -1,5 +1,8 @@
 import { FormControl, FormLabel, VStack, Input, InputGroup, InputRightElement, Button } from '@chakra-ui/react'
 import React, { useState } from 'react'
+import { useToast } from '@chakra-ui/react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 const Signup = () => {
     const [show, setShow] = useState(false);
@@ -11,6 +14,60 @@ const Signup = () => {
     const [password, setPassword] = useState();
     const [pic, setPic] = useState();
     const [picLoading, setPicLoading] = useState(false);
+    const [loading, setLoading] = useState(false)
+    const toast = useToast()
+    const navigate = useNavigate()
+
+    const submitHandler = async () => {
+        setPicLoading(true);
+        if (!email || !password) {
+          toast({
+            title: "Please Fill all the Feilds",
+            status: "warning",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+          setPicLoading(false);
+          return;
+        }
+    
+        try {
+          const config = {
+            headers: {
+              "Content-type": "application/json",
+            },
+          };
+    
+          const { data } = await axios.post(
+            `${process.env.REACT_APP_BASE_API_URL}/api/user/login`,
+            { email, password },
+            config
+          );
+        
+          toast({
+            title: "Login Successful",
+            status: "success",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+        //   setUser(data);
+          localStorage.setItem("userInfo", JSON.stringify(data));
+          setPicLoading(false);
+          navigate("/chats");
+        } catch (error) {
+          toast({
+            title: "Error Occured!",
+            description: error.response.data.message,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+            position: "bottom",
+          });
+          setPicLoading(false);
+        }
+      };
 
     return (
         <VStack spacing={'5px'} color={"black"}>
@@ -18,6 +75,7 @@ const Signup = () => {
                 <FormLabel>Email</FormLabel>
                 <Input
                     placeholder="Enter You Email"
+                    value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </FormControl>
@@ -27,6 +85,7 @@ const Signup = () => {
                     <Input
                         type={show ? 'text' : 'password'}
                         placeholder="Enter You password"
+                        value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <InputRightElement width="4.5rem">
@@ -40,7 +99,7 @@ const Signup = () => {
                 colorScheme="blue"
                 width="100%"
                 style={{ marginTop: 15 }}
-                // onClick={submitHandler}
+                onClick={submitHandler}
                 isLoading={picLoading}
             >
                 Login
