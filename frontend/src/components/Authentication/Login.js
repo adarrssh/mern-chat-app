@@ -8,13 +8,9 @@ const Signup = () => {
     const [show, setShow] = useState(false);
     const handleClick = () => setShow(!show);
 
-    const [name, setName] = useState();
     const [email, setEmail] = useState();
-    const [confirmpassword, setConfirmpassword] = useState();
     const [password, setPassword] = useState();
-    const [pic, setPic] = useState();
     const [picLoading, setPicLoading] = useState(false);
-    const [loading, setLoading] = useState(false)
     const toast = useToast()
     const navigate = useNavigate()
 
